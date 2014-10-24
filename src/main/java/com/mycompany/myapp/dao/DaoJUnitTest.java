@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import com.mycompany.myapp.domain.CalendarUser;
 import com.mycompany.myapp.domain.Event;
 import com.mycompany.myapp.domain.EventAttendee;
+import com.mycompany.myapp.domain.EventLevel;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +45,7 @@ public class DaoJUnitTest {
 	public void setUp() {
 		calendarUsers = new CalendarUser[numInitialNumUsers];
 		events = new Event[numInitialNumEvents];
-		eventAttendees = new EventAttendee[numInitialNumEvents];
+		eventAttendees = new EventAttendee[numInitialNumEventAttendees];
 		
 		this.calendarUserDao.deleteAll();
 		this.eventDao.deleteAll();
@@ -63,23 +64,29 @@ public class DaoJUnitTest {
 			events[i].setSummary("Event Summary - " + i);
 			events[i].setDescription("Event Description - " + i);
 			events[i].setOwner(calendarUsers[random.nextInt(numInitialNumUsers)]);
+			
 			switch (i) {				          /* Updated by Assignment 3 */
 				case 0:
-					events[i].setNumLikes(0);  							
+					events[i].setNumLikes(1);
+					events[i].setEventLevel(EventLevel.HOT);
 					break;
 				case 1:
 					events[i].setNumLikes(9);
+					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 				case 2:
 					events[i].setNumLikes(10);
+					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 				case 3:
 					events[i].setNumLikes(10);
+					events[i].setEventLevel(EventLevel.HOT);
 					break;
 			}
 			events[i].setId(eventDao.createEvent(events[i]));
 		}
-		
+		//System.out.println("eventAttendees 배열 길이"+numInitialNumEvents);
+		//System.out.println("eventAttendees 배열 길이"+eventAttendees.length);
 		for (int i = 0; i < numInitialNumEventAttendees; i++) {
 			eventAttendees[i] = new EventAttendee();
 			eventAttendees[i].setEvent(events[i % numInitialNumEvents]);
@@ -115,6 +122,8 @@ public class DaoJUnitTest {
 	@Test
 	public void getAllEventAttendees() {
 		// TODO Assignment 3
-		// 각 이벤트 별로 등록된 Attendee 개수가 3인지 확인하는 테스트 코드 
+		// 각 이벤트 별로 등록된 Attendee 개수가 3인지 확인하는 테스트 코드
+
+		
 	}
 }

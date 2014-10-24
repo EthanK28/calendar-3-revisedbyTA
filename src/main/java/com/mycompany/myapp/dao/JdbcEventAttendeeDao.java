@@ -1,16 +1,23 @@
 package com.mycompany.myapp.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.mycompany.myapp.domain.Event;
 import com.mycompany.myapp.domain.EventAttendee;
 
 @Repository
@@ -20,7 +27,7 @@ public class JdbcEventAttendeeDao implements EventAttendeeDao {
 	private RowMapper<EventAttendee> rowMapper;
 
 	@Autowired
-	private CalendarUserDao eventDao;
+	private EventDao eventDao;
 	
 	@Autowired
 	private CalendarUserDao calendarUserDao;
@@ -32,6 +39,9 @@ public class JdbcEventAttendeeDao implements EventAttendeeDao {
 				EventAttendee eventAttendeeList = new EventAttendee();
 
 				/* TODO Assignment 3 */
+				eventAttendeeList.setId(rs.getInt("id"));
+				eventAttendeeList.setEvent(eventDao.findEvent((rs.getInt("event_id"))));
+				eventAttendeeList.setAttendee(calendarUserDao.findUser(rs.getInt("attendee")));		
 				
 				return eventAttendeeList;
 			}
@@ -46,30 +56,48 @@ public class JdbcEventAttendeeDao implements EventAttendeeDao {
 	@Override
 	public List<EventAttendee> findEventAttendeeByEventId(int eventId) {
 		// TODO Assignment 3
-		return null;
+		String sql_query = "select * from event_attendees where event_id = ?";
+		return this.jdbcTemplate.query(sql_query, new Object[] {eventId}, rowMapper);
 	}
 
 	@Override
 	public List<EventAttendee> findEventAttendeeByAttendeeId(int attendeeId) {
 		// TODO Assignment 3
-		return null;
+		String sql_query = "select * from event_attendees where attendee = ?";
+		return this.jdbcTemplate.query(sql_query, new Object[] {attendeeId}, rowMapper);
 	}
 
 	@Override
-	public int createEventAttendee(EventAttendee eventAttendee) {
+	public int createEventAttendee(final EventAttendee eventAttendee) {
 		// TODO Assignment 3
-		return -1;
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		jdbcTemplate.update(new PreparedStatementCreator() {			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement("insert into events_attendees(event_id, attendee) values(?,?)", Statement.RETURN_GENERATED_KEYS);
+				//insert into calendar_users(email, password, name) values(?,?,?)
+				ps.setInt(1, eventAttendee.getEvent().getId());
+				ps.setInt(2, eventAttendee.getAttendee().getId());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().intValue();
 	}
 
 	@Override
 	public void deleteEventAttendee(int id) {
 		// TODO Assignment 3
+		String sql = "delete from events_attendees where id = ?";
+		this.jdbcTemplate.update(sql, id);		
 		
 	}
 
 	@Override
 	public void deleteAll() {
 		// TODO Assignment 3
+		String sql = "delete from events_attendees";
+		this.jdbcTemplate.update(sql);
 		
 	}
 }

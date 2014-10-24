@@ -75,8 +75,11 @@ public class JdbcEventDao implements EventDao {
 				ps.setTimestamp(1, timestamp);
 				ps.setString(2, event.getSummary());
 				ps.setString(3, event.getDescription());
+				System.out.println("------------- 오우너 아이디값: "+event.getOwner().getId());
 				ps.setInt(4, event.getOwner().getId());
+				System.out.println("------------- 좋아요 갯수값: "+event.getNumLikes());
 				ps.setInt(5, event.getNumLikes());      		/* Updated by Assignment 3 */
+				System.out.println("------------- 레벨값: "+event.getEventLevel().intValue());
 				ps.setInt(6, event.getEventLevel().intValue());	/* Updated by Assignment 3 */
 				return ps;
 			}
@@ -104,14 +107,17 @@ public class JdbcEventDao implements EventDao {
 	
 	@Override
 	public List<Event> findEventsByLevel(EventLevel eventLevel) {
-		// TODO Assignment 3
-		// 인자로 받은 이벤트 레벨에 대해 해당 레벨을 지니고 있는 이벤트들을 반환한다.
-		return null;
+		String sql_query = "select * from event_attendees where event_level = ?";
+		return this.jdbcTemplate.query(sql_query, new Object[] {eventLevel.intValue()}, rowMapper);		
 	}
 
 	@Override
     public void udpateEvent(Event event) {
+
 		// TODO Assignment 3
 		// 인자로 받은 이벤트가 지닌 각 필드 값으로 해당 이벤트 DB 테이블 내 칼럼을 업데이트 한다. 
+		this.jdbcTemplate.update("update events set when = ?, summary = ?, description = ?, owner = ?, num_lieks = ?, event_level where id =?", 
+				event.getWhen(), event.getSummary(), event.getDescription(),				calendarUserDao.findUser(event.getOwner().getId()).getId(),
+				event.getNumLikes(), event.getEventLevel().intValue(), event.getId());
 	}
 }

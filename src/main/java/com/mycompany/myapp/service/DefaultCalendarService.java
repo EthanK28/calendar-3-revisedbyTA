@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.mycompany.myapp.dao.CalendarUserDao;
+import com.mycompany.myapp.dao.EventAttendeeDao;
 import com.mycompany.myapp.dao.EventDao;
 import com.mycompany.myapp.domain.CalendarUser;
 import com.mycompany.myapp.domain.Event;
@@ -22,6 +23,9 @@ public class DefaultCalendarService implements CalendarService {
 	
 	@Autowired
     private CalendarUserDao userDao;
+	
+	@Autowired
+	private EventAttendeeDao eventAttendeeDao;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -31,30 +35,31 @@ public class DefaultCalendarService implements CalendarService {
 	@Override
     public CalendarUser getUser(int id) {
 		// TODO Assignment 3
-		return null;
+		return this.userDao.findUser(id);
 	}
 
 	@Override
     public CalendarUser getUserByEmail(String email) {
 		// TODO Assignment 3
-		return null;
+		return this.userDao.findUserByEmail(email);
 	}
 
 	@Override
     public List<CalendarUser> getUsersByEmail(String partialEmail) {
 		// TODO Assignment 3
-		return null;
+		return this.userDao.findUsersByEmail(partialEmail);
 	}
 
 	@Override
     public int createUser(CalendarUser user) {
 		// TODO Assignment 3
-		return -1;
+		return this.userDao.createUser(user);
 	}
     
 	@Override
     public void deleteAllUsers() {
 		// TODO Assignment 3
+		this.userDao.deleteAll();
 	}
 	
     
@@ -62,20 +67,20 @@ public class DefaultCalendarService implements CalendarService {
     /* Event */
 	@Override
     public Event getEvent(int eventId) {
-		// TODO Assignment 3
-		return null;
+		// TODO Assignment 3		
+		return this.eventDao.findEvent(eventId);
 	}
 
 	@Override
     public List<Event> getEventForOwner(int ownerUserId) {
-		// TODO Assignment 3
-		return null;
+		// TODO Assignment 3		
+		return this.eventDao.findForOwner(ownerUserId);
 	}
 
 	@Override
     public List<Event> getAllEvents() {
 		// TODO Assignment 3
-		return null;
+		return this.eventDao.findAllEvents();
 	}
 
 	@Override
@@ -84,14 +89,14 @@ public class DefaultCalendarService implements CalendarService {
 		
 		if (event.getEventLevel() == null) {
 			event.setEventLevel(EventLevel.NORMAL);
-		}
+		}		
 		
-		return -1;
+		return this.eventDao.createEvent(event);
 	}
     
 	@Override
     public void deleteAllEvents() {
-		// TODO Assignment 3
+		this.eventDao.deleteAll();
 	}
 
 	
@@ -100,29 +105,33 @@ public class DefaultCalendarService implements CalendarService {
 	@Override
 	public List<EventAttendee> getEventAttendeeByEventId(int eventId) {
 		// TODO Assignment 3
-		return null;
+		return this.eventAttendeeDao.findEventAttendeeByEventId(eventId);
 	}
 
 	@Override
 	public List<EventAttendee> getEventAttendeeByAttendeeId(int attendeeId) {
 		// TODO Assignment 3
-		return null;
+		return this.eventAttendeeDao.findEventAttendeeByAttendeeId(attendeeId);
 	}
 
 	@Override
 	public int createEventAttendee(EventAttendee eventAttendee) {
 		// TODO Assignment 3
-		return 0;
+		
+		return this.eventAttendeeDao.createEventAttendee(eventAttendee);
 	}
 
 	@Override
 	public void deleteEventAttendee(int id) {
 		// TODO Assignment 3
+		this.eventAttendeeDao.deleteEventAttendee(id);
+		
 	}
 
 	@Override
 	public void deleteAllEventAttendees() {
 		// TODO Assignment 3
+		this.eventAttendeeDao.deleteAll();		
 	}
 	
 	
