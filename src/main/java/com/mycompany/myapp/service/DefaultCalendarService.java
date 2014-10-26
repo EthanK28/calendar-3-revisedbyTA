@@ -1,5 +1,6 @@
 package com.mycompany.myapp.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class DefaultCalendarService implements CalendarService {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 	
+	public static final int MIN_NUMLIKES_FOR_HOT = 10;
+	
+	@Override
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 	/* CalendarUser */
 	@Override
@@ -82,7 +89,6 @@ public class DefaultCalendarService implements CalendarService {
 		// TODO Assignment 3
 		return this.eventDao.findAllEvents();
 	}
-
 	@Override
     public int createEvent(Event event) {
 		// TODO Assignment 3
@@ -141,12 +147,44 @@ public class DefaultCalendarService implements CalendarService {
 	public void upgradeEventLevels() throws Exception{
 		// TODO Assignment 3
 		// 트랜잭션 관련 코딩 필요함
+		
+		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());		
+		System.out.println("status: "+status);
+		try {
+			List<Event> events =  eventDao.findAllEvents();
+			System.out.println("비었니?"+events.isEmpty());
+			
+			for (Event event: events) {
+				
+				if(canUpgradeEventLevel(event)) {
+					System.out.println("업그레이드전 확인:"+event.getEventLevel());
+					upgradeEventLevel(event);
+					System.out.println("업그레이드후 확인:"+event.getEventLevel());
+					System.out.println("----------------");
+				}
+				
+				//System.out.println("event확인:"+event.getId());
+				//System.out.println("eventlevel확인:"+event.getEventLevel());
+				
+			}
+			this.transactionManager.commit(status);
+		} catch (RuntimeException e) {
+			this.transactionManager.rollback(status);
+			throw e;
+		}
+		
 	}
 
 	@Override
 	public boolean canUpgradeEventLevel(Event event) {
 		// TODO Assignment 3
-		return false;
+		EventLevel currentLevel = event.getEventLevel();
+		switch (currentLevel) {
+		case NORMAL: return (event.getNumLikes()>9);
+		case HOT: return false;
+		default: throw new IllegalArgumentException("Unkown Level: "+currentLevel);
+		}
+		
 	}
 	
 	@Override
@@ -154,4 +192,6 @@ public class DefaultCalendarService implements CalendarService {
 		event.upgradeLevel();
 		eventDao.udpateEvent(event);
 	}
+
+
 }

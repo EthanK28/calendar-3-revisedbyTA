@@ -7,13 +7,17 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+
+
 
 import com.mycompany.myapp.domain.CalendarUser;
 import com.mycompany.myapp.domain.Event;
 import com.mycompany.myapp.domain.EventAttendee;
 
+import static com.mycompany.myapp.service.DefaultCalendarService.MIN_NUMLIKES_FOR_HOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -22,13 +26,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="../applicationContext.xml")
 
 public class CalendarServiceTest {
 	@Autowired
 	private CalendarService calendarService;	
-
+	
 	private CalendarUser[] calendarUsers = null;
 	private Event[] events = null;
 	private EventAttendee[] eventAttentees = null;
@@ -90,18 +95,28 @@ public class CalendarServiceTest {
 	
 	@Test
 	public void CalendarServiceBeanTest() {
+		System.out.println("-----------------------");
+		System.out.println("테스트1");
+		
 		assertThat(calendarService, notNullValue() );
 	}
 	
 	
 	@Test
 	public void upgradeEventLevels() throws Exception{
+		System.out.println("-----------------------");
+		System.out.println("테스트2");
+		
 		this.calendarService.upgradeEventLevels();
 		
 		checkEventLevelUpgraded(events[0], false);
 		checkEventLevelUpgraded(events[1], false);
 		checkEventLevelUpgraded(events[2], true);
 		checkEventLevelUpgraded(events[3], true);
+		
+		for (int i=0; i <4; i++){
+			System.out.println("event Level값: "+events[i].getEventLevel());
+		}
 	}
 	
 	private void checkEventLevelUpgraded(Event event, boolean upgraded) {
@@ -116,8 +131,30 @@ public class CalendarServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() throws Exception{
+		System.out.println("-----------------------");
+		System.out.println("테스트3");
 		CalendarService testCalendarService = new TestCalendarService(events[3].getId());
+		System.out.println("이벤트3 아이디: "+events[3].getId());
+		//testCalendarService.setTransactionManager(transactionManager);	
 				
+		/*
+		UserService testUserService = new TestUserService(users.get(3).getId());
+		testUserService.setUserDao(this.userDao);
+		testUserService.setTransactionManager(transactionManager);
+		
+		userDao.deleteAll();
+		for(User user : users) userDao.add(user);
+		
+		try {
+			testUserService.upgradeLevels();
+			fail("TestUserServiceException expected");
+		}
+		catch(TestUserServiceException e) {
+			assertThat(e, isA(TestUserServiceException.class));
+		}
+		
+		checkLevelUpgraded(users.get(1), false);
+		 */
 		try {
 			testCalendarService.upgradeEventLevels();
 			fail("TestUserServiceException expected");
@@ -126,7 +163,7 @@ public class CalendarServiceTest {
 			assertThat(e, isA(TestCalenadarServiceException.class));
 		}
 		
-		checkEventLevelUpgraded(events[2], false);
+		checkEventLevelUpgraded(events[1], false);
 	}
 	
 	static class TestCalendarService extends DefaultCalendarService {
@@ -134,6 +171,7 @@ public class CalendarServiceTest {
 		
 		public TestCalendarService(int faultId) {
 			this.faultId = faultId;
+			System.out.println("이벤트3 아이디: "+faultId);
 		}
 		
 		public void upgradeEventLevel(Event event) {

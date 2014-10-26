@@ -2,11 +2,15 @@ package com.mycompany.myapp.service;
 
 import java.util.List;
 
+import org.springframework.transaction.PlatformTransactionManager;
+
 import com.mycompany.myapp.domain.CalendarUser;
 import com.mycompany.myapp.domain.Event;
 import com.mycompany.myapp.domain.EventAttendee;
 
 public interface CalendarService {
+	
+	public void setTransactionManager(PlatformTransactionManager transactionManager);
 	/* CalendarUser */
     public CalendarUser getUser(int id);
 

@@ -68,19 +68,19 @@ public class DaoJUnitTest {
 			switch (i) {				          /* Updated by Assignment 3 */
 				case 0:
 					events[i].setNumLikes(1);
-					events[i].setEventLevel(EventLevel.HOT);
+					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 				case 1:
-					events[i].setNumLikes(9);
+					events[i].setNumLikes(2);
 					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 				case 2:
-					events[i].setNumLikes(10);
+					events[i].setNumLikes(11);
 					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 				case 3:
-					events[i].setNumLikes(10);
-					events[i].setEventLevel(EventLevel.HOT);
+					events[i].setNumLikes(12);
+					events[i].setEventLevel(EventLevel.NORMAL);
 					break;
 			}
 			events[i].setId(eventDao.createEvent(events[i]));

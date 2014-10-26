@@ -73,13 +73,14 @@ public class JdbcEventDao implements EventDao {
 				
 				Timestamp timestamp = new Timestamp(Calendar.getInstance().getTimeInMillis()); /* Updated by Assignment 3 */ 
 				ps.setTimestamp(1, timestamp);
+				
 				ps.setString(2, event.getSummary());
 				ps.setString(3, event.getDescription());
-				System.out.println("------------- 오우너 아이디값: "+event.getOwner().getId());
+				//System.out.println("------------- 오우너 아이디값: "+event.getOwner().getId());
 				ps.setInt(4, event.getOwner().getId());
-				System.out.println("------------- 좋아요 갯수값: "+event.getNumLikes());
+				//System.out.println("------------- 좋아요 갯수값: "+event.getNumLikes());
 				ps.setInt(5, event.getNumLikes());      		/* Updated by Assignment 3 */
-				System.out.println("------------- 레벨값: "+event.getEventLevel().intValue());
+				//System.out.println("------------- 레벨값: "+event.getEventLevel().intValue());
 				ps.setInt(6, event.getEventLevel().intValue());	/* Updated by Assignment 3 */
 				return ps;
 			}
@@ -116,8 +117,11 @@ public class JdbcEventDao implements EventDao {
 
 		// TODO Assignment 3
 		// 인자로 받은 이벤트가 지닌 각 필드 값으로 해당 이벤트 DB 테이블 내 칼럼을 업데이트 한다. 
-		this.jdbcTemplate.update("update events set when = ?, summary = ?, description = ?, owner = ?, num_lieks = ?, event_level where id =?", 
-				event.getWhen(), event.getSummary(), event.getDescription(),				calendarUserDao.findUser(event.getOwner().getId()).getId(),
+		Timestamp timestamp = new Timestamp(Calendar.getInstance().getTimeInMillis());
+		this.jdbcTemplate.update("update events set summary = ?, description = ?, owner = ?, num_likes = ?, event_level = ? where id =?", 
+				event.getSummary(), event.getDescription(),event.getOwner().getId(),
 				event.getNumLikes(), event.getEventLevel().intValue(), event.getId());
+		//("update users set name =?, password=?, level=?, login=?, recommend =? where id=? ", user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+		
 	}
 }
