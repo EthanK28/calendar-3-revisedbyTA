@@ -39,6 +39,9 @@ public class CalendarServiceTest {
 	private EventAttendee[] eventAttentees = null;
 	
 	private Random random = new Random(System.currentTimeMillis());
+	
+	@Autowired
+	PlatformTransactionManager transactionManager;
 
 	private static final int numInitialNumUsers = 12;
 	private static final int numInitialNumEvents = 4;
@@ -79,8 +82,10 @@ public class CalendarServiceTest {
 				case 3:
 					events[i].setNumLikes(10);
 					break;
-			}
+			}			
 			events[i].setId(calendarService.createEvent(events[i]));
+			//System.out.println("아이디 확인:"+events[i].getId());
+			
 		}
 		
 		for (int i = 0; i < numInitialNumEvents; i++) {
@@ -114,6 +119,7 @@ public class CalendarServiceTest {
 		checkEventLevelUpgraded(events[2], true);
 		checkEventLevelUpgraded(events[3], true);
 		
+		
 		for (int i=0; i <4; i++){
 			System.out.println("event Level값: "+events[i].getEventLevel());
 		}
@@ -134,27 +140,8 @@ public class CalendarServiceTest {
 		System.out.println("-----------------------");
 		System.out.println("테스트3");
 		CalendarService testCalendarService = new TestCalendarService(events[3].getId());
-		System.out.println("이벤트3 아이디: "+events[3].getId());
-		//testCalendarService.setTransactionManager(transactionManager);	
-				
-		/*
-		UserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(this.userDao);
-		testUserService.setTransactionManager(transactionManager);
+		//testCalendarService.setTransactionManager(transactionManager);
 		
-		userDao.deleteAll();
-		for(User user : users) userDao.add(user);
-		
-		try {
-			testUserService.upgradeLevels();
-			fail("TestUserServiceException expected");
-		}
-		catch(TestUserServiceException e) {
-			assertThat(e, isA(TestUserServiceException.class));
-		}
-		
-		checkLevelUpgraded(users.get(1), false);
-		 */
 		try {
 			testCalendarService.upgradeEventLevels();
 			fail("TestUserServiceException expected");
@@ -163,7 +150,7 @@ public class CalendarServiceTest {
 			assertThat(e, isA(TestCalenadarServiceException.class));
 		}
 		
-		checkEventLevelUpgraded(events[1], false);
+		checkEventLevelUpgraded(events[2], false);
 	}
 	
 	static class TestCalendarService extends DefaultCalendarService {
@@ -171,7 +158,7 @@ public class CalendarServiceTest {
 		
 		public TestCalendarService(int faultId) {
 			this.faultId = faultId;
-			System.out.println("이벤트3 아이디: "+faultId);
+			System.out.println("이벤트3 아이디값 잘받았는지 확인: "+faultId);
 		}
 		
 		public void upgradeEventLevel(Event event) {

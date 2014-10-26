@@ -108,6 +108,7 @@ public class JdbcEventDao implements EventDao {
 	
 	@Override
 	public List<Event> findEventsByLevel(EventLevel eventLevel) {
+		// TODO Assignment 3
 		String sql_query = "select * from event_attendees where event_level = ?";
 		return this.jdbcTemplate.query(sql_query, new Object[] {eventLevel.intValue()}, rowMapper);		
 	}
@@ -121,7 +122,7 @@ public class JdbcEventDao implements EventDao {
 		this.jdbcTemplate.update("update events set summary = ?, description = ?, owner = ?, num_likes = ?, event_level = ? where id =?", 
 				event.getSummary(), event.getDescription(),event.getOwner().getId(),
 				event.getNumLikes(), event.getEventLevel().intValue(), event.getId());
-		//("update users set name =?, password=?, level=?, login=?, recommend =? where id=? ", user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+		
 		
 	}
 }

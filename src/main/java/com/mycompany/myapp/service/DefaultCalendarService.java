@@ -1,5 +1,9 @@
 package com.mycompany.myapp.service;
 
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
 
 import com.mycompany.myapp.dao.CalendarUserDao;
 import com.mycompany.myapp.dao.EventAttendeeDao;
@@ -148,24 +153,28 @@ public class DefaultCalendarService implements CalendarService {
 		// TODO Assignment 3
 		// 트랜잭션 관련 코딩 필요함
 		
-		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());		
+		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+		
+		List<Event> events = new ArrayList<Event>();		
+		events = eventDao.findAllEvents();
+		System.out.println();
+		System.out.println("비었니?"+events.isEmpty());
+		for (Event event: events) {
+			System.out.println("각각 값확인"+event.getId());			
+		}		
+		
+		//Status 객체 제대로 적용 되어 있는지 확인
 		System.out.println("status: "+status);
-		try {
-			List<Event> events =  eventDao.findAllEvents();
-			System.out.println("비었니?"+events.isEmpty());
+		try {			
+			
 			
 			for (Event event: events) {
-				
 				if(canUpgradeEventLevel(event)) {
-					System.out.println("업그레이드전 확인:"+event.getEventLevel());
+					System.out.println("업그레이드전 Level 확인:"+event.getEventLevel());
 					upgradeEventLevel(event);
-					System.out.println("업그레이드후 확인:"+event.getEventLevel());
+					System.out.println("업그레이드후 Level 확인:"+event.getEventLevel());
 					System.out.println("----------------");
 				}
-				
-				//System.out.println("event확인:"+event.getId());
-				//System.out.println("eventlevel확인:"+event.getEventLevel());
-				
 			}
 			this.transactionManager.commit(status);
 		} catch (RuntimeException e) {
@@ -180,7 +189,7 @@ public class DefaultCalendarService implements CalendarService {
 		// TODO Assignment 3
 		EventLevel currentLevel = event.getEventLevel();
 		switch (currentLevel) {
-		case NORMAL: return (event.getNumLikes()>9);
+		case NORMAL: return (event.getNumLikes()>=MIN_NUMLIKES_FOR_HOT);
 		case HOT: return false;
 		default: throw new IllegalArgumentException("Unkown Level: "+currentLevel);
 		}

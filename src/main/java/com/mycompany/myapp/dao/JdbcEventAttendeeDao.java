@@ -56,14 +56,14 @@ public class JdbcEventAttendeeDao implements EventAttendeeDao {
 	@Override
 	public List<EventAttendee> findEventAttendeeByEventId(int eventId) {
 		// TODO Assignment 3
-		String sql_query = "select * from event_attendees where event_id = ?";
+		String sql_query = "select * from events_attendees where event_id = ?";
 		return this.jdbcTemplate.query(sql_query, new Object[] {eventId}, rowMapper);
 	}
 
 	@Override
 	public List<EventAttendee> findEventAttendeeByAttendeeId(int attendeeId) {
 		// TODO Assignment 3
-		String sql_query = "select * from event_attendees where attendee = ?";
+		String sql_query = "select * from events_attendees where attendee = ?";
 		return this.jdbcTemplate.query(sql_query, new Object[] {attendeeId}, rowMapper);
 	}
 
